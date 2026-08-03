@@ -1,5 +1,5 @@
 {
-  "name": "@webship/gatsby-steps",
+  "name": "@webship-js/gatsby-steps",
   "version": "2.0.0",
   "description": "webship-js test project with custom Gatsby step definitions (gatsby.steps.js), building and testing gatsby-starter-default on DDEV",
   "main": "tests/step-definitions/gatsby.steps.js",
