@@ -1,0 +1,52 @@
+{
+  "name": "@webship-js/gatsby-steps",
+  "version": "2.0.0-alpha1",
+  "description": "webship-js test project with custom Gatsby step definitions (gatsby.steps.js), building and testing gatsby-starter-default with gatsby serve",
+  "main": "tests/step-definitions/gatsby.steps.js",
+  "files": [
+    "tests/step-definitions/gatsby.steps.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "cucumber-js --config cucumber.js",
+    "test:chromium": "BROWSER=chromium cucumber-js --config cucumber.js",
+    "test:firefox": "BROWSER=firefox cucumber-js --config cucumber.js",
+    "test:webkit": "BROWSER=webkit cucumber-js --config cucumber.js",
+    "generate-reports": "generate-reports"
+  },
+  "keywords": [
+    "webship-js",
+    "gatsby",
+    "cucumber",
+    "playwright",
+    "bdd",
+    "testing"
+  ],
+  "author": "Webship.co",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webship/gatsby-steps.git"
+  },
+  "bugs": {
+    "url": "https://github.com/webship/gatsby-steps/issues"
+  },
+  "homepage": "https://github.com/webship/gatsby-steps#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">= 20.0"
+  },
+  "peerDependencies": {
+    "webship-js": "^2.0.6"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "webship-js": "^2.0.6"
+  },
+  "overrides": {
+    "@cucumber/cucumber": "^12"
+  }
+}

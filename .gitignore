@@ -1,0 +1,8 @@
+node_modules/
+tests/reports/
+screenshots/
+videos/
+.gatsby-site/
+.DS_Store
+npm-debug.log*
+*.log

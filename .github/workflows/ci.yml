@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [2.0.x]
+  pull_request:
+    branches: [2.0.x]
+  workflow_dispatch: {}
+
+env:
+  LAUNCH_URL: http://localhost:8000
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build gatsby-starter-default
+        run: bash scripts/build-gatsby-site.sh
+
+      - name: Serve the built site
+        working-directory: .gatsby-site
+        run: |
+          nohup npx gatsby serve -p 8000 -H 0.0.0.0 > /tmp/gatsby-serve.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -s -o /dev/null "$LAUNCH_URL/" && exit 0
+            sleep 1
+          done
+          echo "gatsby serve did not become ready in time" >&2
+          cat /tmp/gatsby-serve.log >&2
+          exit 1
+
+      - name: Install project dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run webship-js suite against the built site
+        run: npm test
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: webship-js-report
+          path: tests/reports/
+          retention-days: 14
