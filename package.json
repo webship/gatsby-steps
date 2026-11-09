@@ -1,6 +1,6 @@
 {
   "name": "@webship-js/gatsby-steps",
-  "version": "2.0.0-alpha1",
+  "version": "2.0.0-beta1",
   "description": "webship-js test project with custom Gatsby step definitions (gatsby.steps.js), building and testing gatsby-starter-default with gatsby serve",
   "main": "tests/step-definitions/gatsby.steps.js",
   "files": [
