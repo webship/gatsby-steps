@@ -1,3 +1,5 @@
+# The titles, copy and link texts below are those of gatsby-starter-default;
+# swap them for your own content when you copy this feature.
 Feature: Home page
   As a visitor
   I want the gatsby-starter-default home page to render correctly

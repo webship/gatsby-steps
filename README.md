@@ -47,19 +47,30 @@ page:
 
 | Step | What it checks |
 | --- | --- |
-| `Then I should see a hydrated page` | `window.___gatsby` is set — the client-side runtime mounted/hydrated |
-| `Then I should see an optimized image` | a `gatsby-plugin-image` (`[data-gatsby-image-wrapper]`) is on the page |
-| `When I click the link "..." without a full page reload` | clicking navigates client-side (no full page reload) |
-| `Then the page-data for "/path/" should be available` | `page-data/<segment>/page-data.json` for that route returns 200 with a `path` |
-| `Then I should be on the default 404 page` | body text matches gatsby-starter-default's `404: Not Found` copy |
-| `Then the page title should be "..."` | exact `document.title` match |
+| `Then I should( not) see a hydrated page` | `window.___gatsby` is set — the client-side runtime mounted/hydrated |
+| `Then I should( not) see an optimized image` | a `gatsby-plugin-image` (`[data-gatsby-image-wrapper]`) is on the page |
+| `When I click the link "..." without a full page reload` | clicking navigates client-side (the URL path changes with no full page reload) |
+| `Then the page-data for "/path/" should( not) be available` | `page-data/<segment>/page-data.json` for that route returns 200 with a `path` |
+| `Then I should( not) be on the default 404 page` | body text matches gatsby-starter-default's `404: Not Found` copy |
+| `Then the page title should( not) be "..."` | exact `document.title` match |
 
-See the file for full JSDoc + Gherkin examples per step.
+Every Then step takes `should` or `should not`, every step takes `I`, `we` or
+no pronoun, and every failure is a friendly message with a hint (no assertion
+or Playwright stack). Each assertion polls its condition for the
+`minWaitTime.page` budget (at least 10 s) instead of reading the page once, so
+a page that is still hydrating is waited for rather than failed.
+
+See the file for full JSDoc + Gherkin examples per step. `npm run test:examples`
+checks that every example matches its own step (and no webship-js core step)
+and that every feature step is defined exactly once; CI runs it before the
+suite.
 
 ## Feature coverage
 
 `tests/features/` covers gatsby-starter-default's main pages: `/`,
-`/page-2/`, `/using-typescript/`, and the 404 fallback.
+`/page-2/`, `/using-typescript/`, and the 404 fallback. The titles, copy and
+link texts they assert are the starter's own; swap them for your site's
+content when you copy a feature.
 
 `/using-ssr/` and `/using-dsg/` aren't covered yet, though `gatsby serve`
 (unlike a plain static file server) does serve them correctly — that's
