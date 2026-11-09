@@ -1,3 +1,5 @@
+# The titles, copy and link texts below are those of gatsby-starter-default;
+# swap them for your own content when you copy this feature.
 Feature: Page 2
   As a visitor
   I want the gatsby-starter-default "Page 2" page to render correctly
