@@ -1,6 +1,6 @@
 {
   "name": "@webship-js/gatsby-steps",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "webship-js step pack for Gatsby sites: production build, hydration, client-side routing, route announcer, prefetching, scroll restoration, optimized images, page-data, the 404 page, the Head API and the web app manifest.",
   "main": "tests/step-definitions/gatsby.steps.js",
   "files": [
