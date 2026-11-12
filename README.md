@@ -1,95 +1,121 @@
 # gatsby-steps
 
-A [webship-js](https://webship.co/docs/webship-js/2.0.x) test project for
-[Gatsby](https://www.gatsbyjs.com/) sites, using the standard webship-js
-project layout (as installed by `webship-js`'s own scaffolding) with custom
-Gatsby-aware step definitions in `tests/step-definitions/gatsby.steps.js`.
-
-By default it tests [gatsby-starter-default](https://github.com/gatsbyjs/gatsby-starter-default),
-built locally by `scripts/build-gatsby-site.sh` and served with
-`gatsby serve -p 8000` at `http://localhost:8000` (exactly what CI does).
-Point `LAUNCH_URL` at any other Gatsby site to test it instead.
-
-The target **must** be a production build (`gatsby build && gatsby serve`),
-not `gatsby develop`: the dev server's live-reload WebSocket/HMR traffic
-never lets the page go network-idle, which makes webship-js's smart-wait
-stall for tens of seconds on every navigation.
+A [webship-js](https://webship.co/docs/webship-js/2.0.x) step pack for
+[Gatsby](https://www.gatsbyjs.com/) sites. It tests what Gatsby itself does:
+the production build, hydration, client-side routing, optimized images,
+page-data, the 404 page, the Head API and the web app manifest.
 
 Published to npm as [`@webship-js/gatsby-steps`](https://www.npmjs.com/package/@webship-js/gatsby-steps).
 
-## Layout
+## Install in your own project
 
-This is the layout `webship-js`'s own installer generates — nothing custom,
-just filled in:
-
-```
-cucumber.js                          # webship-js config (require paths, worldParameters, launchUrl)
-playwright.config.ts                 # browser launch/context options
-tsconfig.json
-tests/
-  features/                          # .feature files (this repo's Gatsby main-page scenarios)
-  step-definitions/
-    gatsby.steps.js                  # custom Gatsby-aware steps — no custom.js
-  reports/                           # generated HTML/JSON report (gitignored)
-  selectors/                         # named selector registry (empty by default)
-scripts/
-  build-gatsby-site.sh               # clones + builds gatsby-starter-default into .gatsby-site (gitignored)
-.github/workflows/ci.yml             # build + serve + webship-js suite on every push/PR
+```bash
+npm install --save-dev webship-js @webship-js/gatsby-steps
 ```
 
-## Custom steps
+Add the entry file to `require` in your `cucumber.js`:
 
-`tests/step-definitions/gatsby.steps.js` adds steps for things generic
-webship-js steps don't know about. The step phrases are deliberately
-framework-agnostic (no "Gatsby" in the Gherkin text), even though what they
-check under the hood is specific to how this framework builds and hydrates a
-page:
+```javascript
+require: [
+  'node_modules/webship-js/tests/step-definitions/**/*.js',                      // webship-js core steps
+  'node_modules/@webship-js/gatsby-steps/tests/step-definitions/gatsby.steps.js', // this pack
+  'tests/step-definitions/**/*.js',                                               // your own steps
+],
+```
 
-| Step | What it checks |
-| --- | --- |
-| `Then I should( not) see a hydrated page` | `window.___gatsby` is set — the client-side runtime mounted/hydrated |
-| `Then I should( not) see an optimized image` | a `gatsby-plugin-image` (`[data-gatsby-image-wrapper]`) is on the page |
-| `When I click the link "..." without a full page reload` | clicking navigates client-side (the URL path changes with no full page reload) |
-| `Then the page-data for "/path/" should( not) be available` | `page-data/<segment>/page-data.json` for that route returns 200 with a `path` |
-| `Then I should( not) be on the default 404 page` | body text matches gatsby-starter-default's `404: Not Found` copy |
-| `Then the page title should( not) be "..."` | exact `document.title` match |
+Point `LAUNCH_URL` at a **production build** (`gatsby build` and `gatsby serve`),
+not at `gatsby develop`. The development server keeps a hot-reload connection
+open, so the page never goes network-idle and webship-js waits for tens of
+seconds on every navigation. It also has no build hash and a different 404
+page; the step "the site should be a production build" tells you at once when
+the wrong server is behind `LAUNCH_URL`.
+
+## Steps
 
 Every Then step takes `should` or `should not`, every step takes `I`, `we` or
-no pronoun, and every failure is a friendly message with a hint (no assertion
-or Playwright stack). Each assertion polls its condition for the
-`minWaitTime.page` budget (at least 10 s) instead of reading the page once, so
-a page that is still hydrating is waited for rather than failed.
+no pronoun, and every failure is a message with a hint, never a raw assertion
+or Playwright stack. Each assertion polls its condition for the
+`minWaitTime.page` budget (at least 10 seconds), so a page that is still
+hydrating is waited for rather than failed. The sentences are plain English;
+each one is documented in its step file with five examples.
 
-See the file for full JSDoc + Gherkin examples per step. `npm run test:examples`
-checks that every example matches its own step (and no webship-js core step)
-and that every feature step is defined exactly once; CI runs it before the
-suite.
+### Build and runtime (`gatsby-site.steps.js`)
 
-## Feature coverage
+| Step | What it relies on in Gatsby |
+| --- | --- |
+| `the page should( not) be generated by Gatsby` / `I should( not) see the Gatsby generator meta tag` | `<meta name="generator" content="Gatsby 5.x.y">`, written by a production build only |
+| `the page should( not) be generated by Gatsby version "5.16"` | the version after "Gatsby ", matched from its start |
+| `the site should( not) be a production build` | `window.___webpackCompilationHash` is set and there is no `socket.io` script (`gatsby develop` has no hash and loads one) |
+| `I should( not) see a hydrated page` | React has attached to `#___gatsby` and `#gatsby-focus-wrapper` (`__reactContainer$`, `__reactFiber$` on the nodes) |
+| `there should be (no) hydration errors` | React's hydration messages (`Minified React error #418`, `#423`, `#425`, or "Hydration failed") on `pageerror` and the console, recorded for every scenario |
+| `the page should( not) be from the current build` | the inline build hash equals `page-data/app-data.json` |
+| `the page head should( not) be set by the Head API` | tags rendered by the `Head` export carry `data-gatsby-head="true"` |
+| `the web app manifest should be valid` | `<link rel="manifest">`, JSON with a name, `start_url` and icons that are served as images (gatsby-plugin-manifest) |
+| `I should( not) see "text" without JavaScript` | a second browser context with JavaScript off sees the HTML rendered at build time (or on the server) |
 
-`tests/features/` covers gatsby-starter-default's main pages: `/`,
-`/page-2/`, `/using-typescript/`, and the 404 fallback. The titles, copy and
-link texts they assert are the starter's own; swap them for your site's
-content when you copy a feature.
+`window.___gatsby` is not a Gatsby global: browsers expose every element that
+has an `id` on `window`, so it is the server-rendered `<div>` and is set before
+React runs. The hydration steps look for React's own markers instead.
 
-`/using-ssr/` and `/using-dsg/` aren't covered yet, though `gatsby serve`
-(unlike a plain static file server) does serve them correctly — that's
-tracked as further test coverage, not a current limitation of the setup.
+### Routing (`gatsby-routing.steps.js`)
+
+| Step | What it relies on in Gatsby |
+| --- | --- |
+| `I click the link "text" without a full page reload` | `<Link>` renders an `<a href>` that the router handles once the page is hydrated; a marker on `window` survives a client-side navigation and not a reload. The step waits for hydration first: a click before it is an ordinary navigation |
+
+### Content (`gatsby-content.steps.js`)
+
+| Step | What it relies on in Gatsby |
+| --- | --- |
+| `I should( not) see an optimized image` | gatsby-plugin-image's `[data-gatsby-image-wrapper]` |
+| `the optimized image should( not) be loaded` | the main `img[data-main-image]` is decoded and shown (`opacity: 1`) and the placeholder has faded out; a lazy image is not loaded until it is near the viewport |
+| `the optimized image should( not) offer the "webp" format` | one `<source type="image/...">` per format of the `formats` option |
+| `the optimized image should( not) have a placeholder` | `[data-placeholder-image]` |
+| `the page-data for "/path/" should( not) be available` | `page-data/<path>/page-data.json` is JSON, has the same path and a `componentChunkName` (the home page is `index`) |
+| `the 404 page should( not) be available` | `404.html` and `page-data/404.html/page-data.json` |
+| `I should( not) be on a 404 page` | the address answers 404, the Gatsby 404 page is hydrated, and it is not the development 404 page |
+| `I should( not) be on the default 404 page` | the copy "404: Not Found" of gatsby-starter-default (a site with its own 404 page uses the step above) |
+| `the page title should( not) be "title"` | the exact `document.title` set by the `Head` export |
+
+The steps read the first image of the page when a page has several. They
+assume the site has no `pathPrefix`.
+
+Not covered: `gatsby-plugin-offline` (the starter does not use it) and
+`gatsby develop`, which this pack deliberately refuses.
+
+`npm run test:examples` checks that every example matches its own step (and no
+webship-js core step) and that every feature step is defined exactly once; CI
+runs it before the suite.
+
+## The fixture site
+
+By default the suite tests
+[gatsby-starter-default](https://github.com/gatsbyjs/gatsby-starter-default)
+at a pinned commit, built by `scripts/build-gatsby-site.sh` into `.gatsby-site`
+(gitignored) with the pages of `fixture/` copied over it, and served by
+`gatsby serve -p 8000`. This is exactly what CI does.
+
+| Fixture page | Proves |
+| --- | --- |
+| `images.js` | a lazy optimized image with a blurred placeholder, far below the fold |
+| `hydration-mismatch.js` | a page that renders differently in the browser, so the hydration check is shown to fail |
+| `using-ssr.js` | the starter's page without its call to an external service, so the suite needs no network |
+
+`STARTER_REF=<commit, branch or tag>` builds another version of the starter.
+To test your own Gatsby site, set `LAUNCH_URL` to its production build and copy
+the features you need.
 
 ## Running locally
 
-Requires Node.js 22+.
+Requires Node.js 22 or later.
 
 ```bash
 npm install
 npx playwright install chromium
-bash scripts/build-gatsby-site.sh   # clones + builds gatsby-starter-default into .gatsby-site (gitignored)
+bash scripts/build-gatsby-site.sh
 (cd .gatsby-site && npx gatsby serve -p 8000 &)
-npm test                            # LAUNCH_URL defaults to http://localhost:8000
+npm test                      # LAUNCH_URL defaults to http://localhost:8000
 ```
-
-To test a different Gatsby site instead, point `LAUNCH_URL` at that site's
-URL when running `npm test`.
 
 ### Lanes, subsets and the settings webship-js reads
 
@@ -99,10 +125,23 @@ URL when running `npm test`.
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` runs the same flow on every push/PR to `2.0.x`:
-build gatsby-starter-default, serve it with `gatsby serve`, install
-dependencies, run the webship-js suite in `tests/features/` against it, and
-upload the HTML/JSON report as a workflow artifact.
+`.github/workflows/ci.yml` runs on every push and pull request to `2.0.x`: it
+builds the fixture site, serves it with `gatsby serve`, checks the examples
+and the step definitions (`--dry-run`), runs the suite and uploads the report.
+
+## Layout
+
+```
+cucumber.js                  webship-js configuration
+fixture/                     pages copied over gatsby-starter-default before the build
+scripts/
+  build-gatsby-site.sh       clone at a pinned commit, copy fixture/, build
+  check-examples.js          npm run test:examples
+tests/
+  features/                  the scenarios
+  step-definitions/          gatsby.steps.js (entry) and the step files
+.github/workflows/ci.yml
+```
 
 ## Publishing
 

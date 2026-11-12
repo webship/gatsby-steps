@@ -2,10 +2,10 @@
 # swap them for your own content when you copy this feature.
 Feature: Page 2
   As a visitor
-  I want the gatsby-starter-default "Page 2" page to render correctly
-  So that I know Gatsby's file-based page routing works
+  I want the "Page 2" page to render correctly
+  So that I know file-based page routing works
 
-  Scenario: Page 2 loads and links back home
+  Scenario: Page 2 loads and is hydrated
     Given I am on "/page-2/"
     Then the page title should be "Page two | Gatsby Default Starter"
     And I should see a hydrated page
