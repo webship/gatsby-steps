@@ -2,8 +2,8 @@
 # swap them for your own content when you copy this feature.
 Feature: Using TypeScript page
   As a visitor
-  I want the gatsby-starter-default "Using TypeScript" page to render correctly
-  So that I know Gatsby's TypeScript page support works
+  I want the "Using TypeScript" page to render correctly
+  So that I know a TypeScript page is built like any other
 
   Scenario: Using TypeScript page loads
     Given I am on "/using-typescript/"

@@ -46,6 +46,9 @@ jobs:
       - name: Check the JSDoc examples and feature steps against the step regexes
         run: npm run test:examples
 
+      - name: Check that every feature step is defined once
+        run: npx cucumber-js --config cucumber.js --dry-run --format summary
+
       - name: Run webship-js suite against the built site
         run: npm test
 

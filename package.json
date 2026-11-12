@@ -1,10 +1,10 @@
 {
   "name": "@webship-js/gatsby-steps",
   "version": "2.0.1",
-  "description": "webship-js test project with custom Gatsby step definitions (gatsby.steps.js), building and testing gatsby-starter-default with gatsby serve",
+  "description": "webship-js step pack for Gatsby sites: production build, hydration, client-side routing, optimized images, page-data, the 404 page, the Head API and the web app manifest.",
   "main": "tests/step-definitions/gatsby.steps.js",
   "files": [
-    "tests/step-definitions/gatsby.steps.js",
+    "tests/step-definitions/*.js",
     "README.md",
     "LICENSE"
   ],
