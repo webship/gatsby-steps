@@ -6,7 +6,8 @@
 //   gatsby-site.steps.js     the build and runtime: generator, production
 //                            build, hydration, build id, Head API, web app
 //                            manifest, the page without JavaScript
-//   gatsby-routing.steps.js  client-side routing
+//   gatsby-routing.steps.js  client-side routing, route announcer, prefetching,
+//                            scroll restoration
 //   gatsby-content.steps.js  optimized images, page-data, the 404 page, the title
 //   gatsby-helpers.js        shared helpers and the hydration error recorder
 //                            (not a step file)

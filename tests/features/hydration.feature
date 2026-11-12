@@ -13,6 +13,7 @@ Feature: Hydration
       | /                  |
       | /page-2/           |
       | /using-typescript/ |
+      | /long-page/        |
       | /images/           |
       | /using-ssr/        |
       | /using-dsg/        |

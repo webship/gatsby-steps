@@ -15,6 +15,7 @@ Feature: 404 page
     And the response status code should be 404
     And I should be on the default 404 page
     And the page title should be "404: Not Found | Gatsby Default Starter"
+    And the route announcer should not announce "Home"
 
   Scenario: A known route is not a 404 page
     Given I am on "/page-2/"
