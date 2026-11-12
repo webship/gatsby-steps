@@ -9,12 +9,14 @@ Feature: Accessibility
     And the page should have a title
     And the page should have a main landmark
     And the page should have exactly one h1
+    And the page should have a route announcer
 
     Examples:
       | path               |
       | /                  |
       | /page-2/           |
       | /using-typescript/ |
+      | /long-page/        |
 
   Scenario: The home page has no serious accessibility violations
     Given I am on the homepage

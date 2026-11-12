@@ -2,8 +2,9 @@
 
 A [webship-js](https://webship.co/docs/webship-js/2.0.x) step pack for
 [Gatsby](https://www.gatsbyjs.com/) sites. It tests what Gatsby itself does:
-the production build, hydration, client-side routing, optimized images,
-page-data, the 404 page, the Head API and the web app manifest.
+the production build, hydration, client-side routing, the route announcer,
+prefetching, scroll restoration, optimized images, page-data, the 404 page,
+the Head API and the web app manifest.
 
 Published to npm as [`@webship-js/gatsby-steps`](https://www.npmjs.com/package/@webship-js/gatsby-steps).
 
@@ -62,6 +63,11 @@ React runs. The hydration steps look for React's own markers instead.
 | Step | What it relies on in Gatsby |
 | --- | --- |
 | `I click the link "text" without a full page reload` | `<Link>` renders an `<a href>` that the router handles once the page is hydrated; a marker on `window` survives a client-side navigation and not a reload. The step waits for hydration first: a click before it is an ordinary navigation |
+| `I go back without a full page reload` | the router handles `popstate` |
+| `the page should( not) have a route announcer` | `#gatsby-announcer` with `aria-live` and `aria-atomic="true"` |
+| `the route announcer should( not) announce "name"` | after a client-side navigation Gatsby says "Navigated to" and the first h1 of the page, else the page title |
+| `the page "/path/" should( not) be prefetched` | `<link rel="prefetch" as="fetch">` for `page-data/<path>/page-data.json` of links in the viewport or hovered |
+| `the scroll position should( not) be restored` | the position noted by the click step comes back after going back (gatsby-react-router-scroll, session storage) |
 
 ### Content (`gatsby-content.steps.js`)
 
@@ -97,6 +103,7 @@ at a pinned commit, built by `scripts/build-gatsby-site.sh` into `.gatsby-site`
 
 | Fixture page | Proves |
 | --- | --- |
+| `long-page.js` | scroll restoration, a link to a section, prefetching on hover (its links are below the fold) |
 | `images.js` | a lazy optimized image with a blurred placeholder, far below the fold |
 | `hydration-mismatch.js` | a page that renders differently in the browser, so the hydration check is shown to fail |
 | `using-ssr.js` | the starter's page without its call to an external service, so the suite needs no network |

@@ -43,3 +43,8 @@ Feature: Home page
     Then the page-data for "/" should be available
     And the page-data for "/page-2/" should be available
     And the page-data for "/no-such-page/" should not be available
+
+  Scenario: Links in the viewport are prefetched
+    Given I should see a hydrated page
+    Then the page "/page-2/" should be prefetched
+    And the page "/using-typescript/" should be prefetched
