@@ -1,3 +1,5 @@
+<p align="center"><img src="https://raw.githubusercontent.com/webship/gatsby-steps/2.0.x/assets/logo.svg" alt="Gatsby logo" width="96"></p>
+
 # gatsby-steps
 
 A [webship-js](https://webship.co/docs/webship-js/2.0.x) step pack for
@@ -157,3 +159,7 @@ Releases are published to npm as `@webship-js/gatsby-steps` from the `2.0.x` bra
 ## License
 
 MIT
+
+## Logo
+
+The Gatsby logo in this README comes from Simple Icons 16.37.0 (CC0-1.0), filled with the colour the set lists for the brand. The Gatsby name and logo are trademarks of their owner; this pack is not affiliated with or endorsed by them.
