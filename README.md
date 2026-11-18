@@ -10,6 +10,124 @@ the Head API and the web app manifest.
 
 Published to npm as [`@webship-js/gatsby-steps`](https://www.npmjs.com/package/@webship-js/gatsby-steps).
 
+## From nothing to a green run
+
+What the machine needs: git, bash and Node.js 22 or later with npm. No
+container: the site is a production build that `gatsby serve` serves.
+
+**1. The site.** The fixture site of this repository, built the way CI builds
+it: [gatsby-starter-default](https://github.com/gatsbyjs/gatsby-starter-default)
+at a pinned commit with the pages of [`fixture/`](fixture/) copied over it
+(see [The fixture site](#the-fixture-site)). Leave `gatsby serve` running in
+its own terminal.
+
+```bash
+git clone https://github.com/webship/gatsby-steps.git
+cd gatsby-steps
+bash scripts/build-gatsby-site.sh
+cd .gatsby-site && npx gatsby serve -p 8000
+```
+
+The site answers at `http://localhost:8000`.
+
+**2. A test project**, in another terminal:
+
+```bash
+mkdir gatsby-tests && cd gatsby-tests
+npm init -y
+npm install --save-dev webship-js @webship-js/gatsby-steps
+npx init-webship-js
+```
+
+`npx init-webship-js` writes `cucumber.js`, `playwright.config.ts`, the
+`tests/` folders with a first feature and the `npm test` scripts, and installs
+Chromium. npm usually runs it already when it installs webship-js; a second
+run changes nothing.
+
+**3. `cucumber.js`.** Replace the file with the wiring of the pack: the step
+files of webship-js and the entry file of the pack, and the address of the
+site. The suite needs no account (see [Test users](#test-users)).
+
+```javascript
+module.exports = {
+  default: {
+    requireModule: ['tsx/cjs'],
+    require: [
+      'node_modules/webship-js/tests/step-definitions/**/*.js',
+      'node_modules/@webship-js/gatsby-steps/tests/step-definitions/gatsby.steps.js',
+      'tests/step-definitions/**/*.js',
+    ],
+    paths: ['tests/features/**/*.feature'],
+    format: ['@cucumber/pretty-formatter', 'json:tests/reports/cucumber_report.json'],
+    worldParameters: {
+      launchUrl: process.env.LAUNCH_URL || 'http://localhost:8000',
+      // The waits webship-js adds around each page, scenario and step (milliseconds).
+      minWaitTime: { page: 3000, before_scenario: 0, after_scenario: 0, before_step: 0, after_step: 0 },
+    },
+  },
+};
+```
+
+**4. A first feature**, `tests/features/first-run.feature`:
+
+```gherkin
+Feature: First run
+  Scenario: The home page is a production build
+    Given I am on the homepage
+    Then the site should be a production build
+    And the page generator version should start with "5"
+
+  Scenario: A link opens the next page without a full page reload
+    Given I am on the homepage
+    When I click the link "Page 2" without a full page reload
+    Then I should be on "/page-2/"
+    And I should see a hydrated page
+```
+
+**5. Run it.**
+
+```bash
+npm test
+```
+
+A green first run prints every step, then the summary (the starter feature of
+`npx init-webship-js` and the two scenarios above, passed) and the HTML report
+it wrote:
+
+```
+3 scenarios (3 passed)
+9 steps (9 passed)
+0m10.959s (executing steps: 0m10.923s)
+[webship-js] HTML report → …/gatsby-tests/tests/reports/cucumber_report.html
+```
+
+From there, copy the features of [`tests/features/`](tests/features/) (they
+also ship in the package, under
+`node_modules/@webship-js/gatsby-steps/tests/features/`): together they use
+every step of the pack, against the pages of [the fixture site](#the-fixture-site).
+
+### What the suite tests
+
+The features of this repository run every step of the pack against the
+fixture site's production build, and CI builds it and runs them on every
+change: the build itself (the generator, a production build and not the
+development server, a page of the current build, page-data, the 404 page and
+its page-data, the web app manifest, the Head API); hydration of every page,
+and a page that renders differently in the browser shown to fail the
+hydration check; content rendered at build time and seen without JavaScript;
+client-side routing (links and the back button without a full page reload,
+the route announcer, prefetching of the links in the viewport and under the
+mouse, scroll restoration, a link to a section); the rendering modes of a page
+rendered on the server on every request and of a page generated on its first
+request; optimized images of gatsby-plugin-image (the placeholder, lazy
+loading, the formats); the page titles; and the structural accessibility
+checks of the main pages.
+
+Not tested: `gatsby develop` (the pack refuses it on purpose),
+gatsby-plugin-offline, a site with a `pathPrefix`, sourcing content from a CMS
+or files through GraphQL beyond what the starter does, Gatsby Functions, and
+the hosting adapters. A run leaves nothing: the site is static.
+
 ## Install in your own project
 
 ```bash
