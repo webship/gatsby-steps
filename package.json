@@ -5,6 +5,7 @@
   "main": "tests/step-definitions/gatsby.steps.js",
   "files": [
     "tests/step-definitions/*.js",
+    "tests/features",
     "README.md",
     "LICENSE"
   ],
