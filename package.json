@@ -14,6 +14,7 @@
     "test:firefox": "BROWSER=firefox cucumber-js --config cucumber.js",
     "test:webkit": "BROWSER=webkit cucumber-js --config cucumber.js",
     "test:examples": "node scripts/check-examples.js",
+    "test:paths": "node scripts/check-paths.js",
     "generate-reports": "generate-reports"
   },
   "keywords": [

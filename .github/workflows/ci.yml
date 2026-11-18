@@ -55,6 +55,11 @@ jobs:
       - name: Check the JSDoc examples and feature steps against the step regexes
         run: npm run test:examples
 
+
+      - name: Check that a feature named on the command line runs alone
+
+        run: npm run test:paths
+
       - name: Check that every feature step is defined once
         run: npx cucumber-js --config cucumber.js --dry-run --format summary
 
