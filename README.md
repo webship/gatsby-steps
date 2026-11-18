@@ -119,6 +119,7 @@ at a pinned commit, built by `scripts/build-gatsby-site.sh` into `.gatsby-site`
 | --- | --- |
 | `long-page.js` | scroll restoration, a link to a section, prefetching on hover (its links are below the fold) |
 | `images.js` | a lazy optimized image with a blurred placeholder, far below the fold |
+| `no-placeholder.js` | an optimized image with `placeholder="none"` and its own format only, so the placeholder and format checks are shown in their negative form |
 | `hydration-mismatch.js` | a page that renders differently in the browser, so the hydration check is shown to fail |
 | `using-ssr.js` | the starter's page without its call to an external service, so the suite needs no network |
 
