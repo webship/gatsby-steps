@@ -11,6 +11,7 @@ Feature: Page 2
     And I should see a hydrated page
     And I should see "Hi from the second page"
     And the page-data for "/page-2/" should be available
+    But the page title should not be "Page two"
 
   Scenario: Page 2 navigates back to the homepage via client-side routing
     Given I am on "/page-2/"

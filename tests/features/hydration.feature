@@ -18,6 +18,14 @@ Feature: Hydration
       | /using-ssr/        |
       | /using-dsg/        |
 
+  # A file of static/ is served as it is: the site does not render or hydrate it.
+  Scenario: A plain HTML file is not a page of the app
+    Given I am on "/plain.html"
+    Then I should see "A plain HTML file"
+    And I should not see a hydrated page
+    And the page should not have a route announcer
+    And the page head should not be set by the Head API
+
   # The page below renders differently on the server and in the browser on
   # purpose: it proves that the hydration check can fail.
   @js-off

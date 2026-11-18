@@ -12,6 +12,8 @@ Feature: Home page
   Scenario: The home page is a Gatsby production build
     Then the page generator should start with "Gatsby"
     And the page generator version should start with "5"
+    But the page generator version should not start with "4"
+    And the page generator should not contain "beta"
     And the site should be a production build
     And the page should be from the current build
 
@@ -38,6 +40,7 @@ Feature: Home page
     And the optimized image should have a placeholder
     And the optimized image should offer the "avif" format
     And the optimized image should offer the "webp" format
+    But the optimized image should not offer the "jpeg" format
 
   Scenario: The home page data was built
     Then the page-data for "/" should be available
