@@ -121,6 +121,9 @@ Then(/^(?:the )?optimized image should( not)* offer the "([^"]*)?" format$/, asy
  * Assert the first optimized image of the page has (or has not) a
  * placeholder: the blurred or dominant-colour image shown until the real one
  * has loaded (`placeholder="blurred"`, `"dominantColor"`; `"none"` has none).
+ * gatsby-plugin-image writes a `[data-placeholder-image]` element for
+ * `"none"` too, an empty one: a placeholder counts when it shows something,
+ * an image (`blurred`, `tracedSVG`) or a background colour (`dominantColor`).
  *
  * Example #1: Then the optimized image should have a placeholder
  * Example #2: And the optimized image should have a placeholder
@@ -129,16 +132,19 @@ Then(/^(?:the )?optimized image should( not)* offer the "([^"]*)?" format$/, asy
  * Example #5: And the optimized image should have a placeholder
  */
 Then(/^(?:the )?optimized image should( not)* have a placeholder$/, async function (notCase) {
-  const ok = await poll(this, async () => {
-    const count = await this.page.locator('[data-gatsby-image-wrapper] [data-placeholder-image]').count();
-    return (count > 0) === !notCase;
-  });
+  const visiblePlaceholders = () => this.page.evaluate(() => Array.from(document.querySelectorAll('[data-gatsby-image-wrapper] [data-placeholder-image]')).filter((element) => {
+    if (element.tagName === 'IMG') return Boolean(element.getAttribute('src') || element.getAttribute('srcset'));
+    const style = getComputedStyle(element);
+    const colour = style.backgroundColor;
+    return (style.backgroundImage && style.backgroundImage !== 'none') || (Boolean(colour) && colour !== 'transparent' && colour !== 'rgba(0, 0, 0, 0)');
+  }).length);
+  const ok = await poll(this, async () => ((await visiblePlaceholders()) > 0) === !notCase);
   if (!ok) {
     throw friendly({
       message: notCase
-        ? 'Expected an optimized image without a placeholder, but it has one.'
-        : 'Expected the optimized image to have a placeholder ([data-placeholder-image]), but it has none.',
-      hint: 'Set the `placeholder` option of `<StaticImage>` / `<GatsbyImage>` to "blurred" or "dominantColor".',
+        ? 'Expected an optimized image without a placeholder, but it has one (a blurred image or a background colour in [data-placeholder-image]).'
+        : 'Expected the optimized image to have a placeholder (an image or a background colour in [data-placeholder-image]), but it has none.',
+      hint: 'Set the `placeholder` option of `<StaticImage>` / `<GatsbyImage>` to "blurred" or "dominantColor"; with "none" the plugin writes an empty [data-placeholder-image] element that shows nothing.',
     });
   }
 });

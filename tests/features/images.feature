@@ -14,6 +14,14 @@ Feature: Optimized images
     And the optimized image should offer the "webp" format
     And the optimized image should offer the "avif" format
 
+  Scenario: An image without a placeholder, in its own format only
+    Given I am on "/no-placeholder/"
+    And I should see a hydrated page
+    Then I should see an optimized image
+    And the optimized image should not have a placeholder
+    And the optimized image should not offer the "webp" format
+    And the optimized image should not offer the "avif" format
+
   Scenario: A page without an optimized image
     Given I am on "/page-2/"
     Then I should not see an optimized image
