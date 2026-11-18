@@ -20,3 +20,4 @@ Feature: 404 page
   Scenario: A known route is not a 404 page
     Given I am on "/page-2/"
     Then I should not be on a 404 page
+    And I should not be on the default 404 page
