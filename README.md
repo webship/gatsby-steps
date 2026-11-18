@@ -128,15 +128,16 @@ npm test                      # LAUNCH_URL defaults to http://localhost:8000
 
 ### Lanes, subsets and the settings webship-js reads
 
-- `FEATURES=tests/features/a.feature,tests/features/b.feature npm test` runs a subset of the feature files; `CUCUMBER_TAGS=@critical npm test` runs a tag lane (the default run leaves `@wip` out).
+- `npx cucumber-js tests/features/homepage.feature` runs one feature and `npx cucumber-js tests/features/homepage.feature:<line>` one scenario (the line of its `Scenario:`; the paths of `cucumber.js` are left out when the command line names any, and `npm run test:paths` checks it); `FEATURES=tests/features/a.feature,tests/features/b.feature npm test` runs a subset of the feature files too; `CUCUMBER_TAGS=@critical npm test` runs a tag lane (the default run leaves `@wip` out).
 - `cucumber.js` carries the `video` block (`WEBSHIP_VIDEO=on-failure` records the browser) and the `javascript` block (`WEBSHIP_JS_ERROR_MODE=fail` fails a scenario on a JavaScript error; `@js-off` silences one scenario) that webship-js reads.
 - The step timeout is webship-js's own (45 seconds, set when it loads); `WEBSHIP_STEP_TIMEOUT=<milliseconds>` changes it, a `timeout` key in `cucumber.js` does not.
 
 ## Continuous integration
 
 `.github/workflows/ci.yml` runs on every push and pull request to `2.0.x`: it
-builds the fixture site, serves it with `gatsby serve`, checks the examples
-and the step definitions (`--dry-run`), runs the suite and uploads the report.
+builds the fixture site, serves it with `gatsby serve`, checks the examples,
+that a feature named on the command line runs alone (`npm run test:paths`) and
+the step definitions (`--dry-run`), runs the suite and uploads the report.
 
 ## Layout
 
@@ -146,6 +147,7 @@ fixture/                     pages copied over gatsby-starter-default before the
 scripts/
   build-gatsby-site.sh       clone at a pinned commit, copy fixture/, build
   check-examples.js          npm run test:examples
+  check-paths.js             npm run test:paths
 tests/
   features/                  the scenarios
   step-definitions/          gatsby.steps.js (entry) and the step files
