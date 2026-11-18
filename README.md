@@ -33,6 +33,18 @@ seconds on every navigation. It also has no build hash and a different 404
 page; the step "the site should be a production build" tells you at once when
 the wrong server is behind `LAUNCH_URL`.
 
+## Test users
+
+None. The suite tests a production build (`gatsby build`, served by
+`gatsby serve`), which has no sign-in: `cucumber.js` lists no accounts (its
+`worldParameters` has no `users`), no scenario logs in, and the fixture site
+that [`scripts/build-gatsby-site.sh`](scripts/build-gatsby-site.sh) builds has
+no account to create. The JSON of the accounts is empty:
+
+```json
+{}
+```
+
 ## Steps
 
 Every Then step takes `should` or `should not`, every step takes `I`, `we` or
