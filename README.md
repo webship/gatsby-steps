@@ -30,6 +30,23 @@ cd .gatsby-site && npx gatsby serve -p 8000
 
 The site answers at `http://localhost:8000`.
 
+In the [Webship Workspace](https://github.com/webship/workspace), its Gatsby
+plugin builds and serves a production build of the same starter in a container,
+with the Node.js it needs (no Node.js 22 on the machine), in a sites folder of
+the workspace (`test/` here; `dev/`, `sandboxes/` and `demos/` work the same):
+
+```bash
+bash core/scripts/plugins.sh --require gatsby --with-needs
+bash core/scripts/plugins.sh --activate gatsby --with-needs
+bash core/scripts/plugins.sh --install gatsby
+bash test/cmd-gatsby-project.sh mysite --install
+```
+
+That site answers at `https://mysite.ddev.site` (step 5). It is the starter
+without the pages of [`fixture/`](fixture/): the first feature passes there,
+the features of [`tests/features/`](tests/features/) need the fixture site of
+step 1.
+
 **2. A test project**, in another terminal:
 
 ```bash
@@ -90,6 +107,7 @@ Feature: First run
 npm test
 ```
 
+(`LAUNCH_URL=https://mysite.ddev.site npm test` for a site at another address.)
 A green first run prints every step, then the summary (the starter feature of
 `npx init-webship-js` and the two scenarios above, passed) and the HTML report
 it wrote:
