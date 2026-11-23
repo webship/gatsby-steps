@@ -12,7 +12,7 @@ Published to npm as [`@webship-js/gatsby-steps`](https://www.npmjs.com/package/@
 
 ## From nothing to a green run
 
-What the machine needs: git, bash and Node.js 22 or later with npm. No
+What the machine needs: git, bash and Node.js 24 or later with npm. No
 container: the site is a production build that `gatsby serve` serves.
 
 **1. The site.** The fixture site of this repository, built the way CI builds
@@ -32,7 +32,7 @@ The site answers at `http://localhost:8000`.
 
 In the [Webship Workspace](https://github.com/webship/workspace), its Gatsby
 plugin builds and serves a production build of the same starter in a container,
-with the Node.js it needs (no Node.js 22 on the machine), in a sites folder of
+with the Node.js it needs (not the machine's Node.js), in a sites folder of
 the workspace (`test/` here; `dev/`, `sandboxes/` and `demos/` work the same):
 
 ```bash
@@ -266,7 +266,7 @@ the features you need.
 
 ## Running locally
 
-Requires Node.js 22 or later.
+Requires Node.js 24 or later.
 
 ```bash
 npm install
